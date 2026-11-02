@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Shy Button</title>
+  <meta name="description" content="A button that would rather not be clicked. Try anyway.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🙈%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1 class="title">The Shy Button</h1>
+    <p class="subtitle" id="subtitle">There is one button. It has feelings about that.</p>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="shy" id="shy" data-state="shy">
+      <p class="bubble" id="bubble" aria-hidden="true">Oh! Hi.</p>
+
+      <button class="btn" id="btn" type="button">
+        <span class="face" aria-hidden="true">
+          <span class="eye"><span class="pupil"></span></span>
+          <span class="eye"><span class="pupil"></span></span>
+          <span class="cheek cheek--left"></span>
+          <span class="cheek cheek--right"></span>
+        </span>
+        <span class="label" id="label">Click me</span>
+        <span class="sweat" aria-hidden="true"></span>
+      </button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p class="stat">Escapes: <strong id="escapes">0</strong></p>
+    <p class="stat" id="time-stat" hidden>Caught in: <strong id="time">0</strong> s</p>
+    <button class="reset" id="reset" type="button" hidden>Make it shy again</button>
+  </footer>
+
+  <!-- Announces state changes to screen readers (the bubble text changes too often to announce). -->
+  <p class="sr-only" id="status" role="status"></p>
+
+  <script src="js/script.js" defer></script>
+</body>
+</html>

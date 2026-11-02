@@ -1,0 +1,327 @@
+/* ==========================================================================
+   The Shy Button
+   ========================================================================== */
+
+/* ---------- Design tokens ---------- */
+:root {
+  --lavender: #e6dffb;   /* page */
+  --room: #f3effe;       /* the space the button hides in */
+  --plum: #2a1a4d;       /* ink, outlines */
+  --coral: #ff7a93;      /* button */
+  --cheek: #e0325c;      /* blush */
+  --butter: #ffd670;     /* caught state */
+  --sweat: #8fd3ff;
+  --white: #ffffff;
+
+  --font: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --line: 3px solid var(--plum);
+  --gutter: clamp(12px, 4vw, 40px);
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: var(--lavender);
+  color: var(--plum);
+  font-family: var(--font);
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Header ---------- */
+.header {
+  padding: clamp(20px, 4vw, 36px) var(--gutter) 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2.25rem, 8vw, 4rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin: 10px 0 0;
+  max-width: 40ch;
+}
+
+/* ---------- Stage (where the button roams) ---------- */
+.stage {
+  position: relative;
+  margin: 0 var(--gutter);
+  min-height: 320px;
+  overflow: hidden;
+  background: var(--room);
+  border: var(--line);
+  border-radius: 28px;
+}
+
+/* JS moves this wrapper with transform: translate(x, y) */
+.shy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.3s cubic-bezier(0.2, 1.4, 0.5, 1);
+  will-change: transform;
+}
+
+/* ---------- Speech bubble ---------- */
+.bubble {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin: 0 0 14px;
+  padding: 6px 14px;
+  width: max-content;
+  max-width: 220px;
+  translate: -50% 0; /* separate property so the pop animation (transform) doesn't override it */
+  background: var(--white);
+  border: var(--line);
+  border-radius: 16px;
+  font-size: 1rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Bubble tail */
+.bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -7px;
+  background: var(--white);
+  border: var(--line);
+  border-top: 0;
+  border-left: 0;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.bubble.pop {
+  animation: pop 0.25s ease-out;
+}
+
+/* ---------- Button ---------- */
+.btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 176px;
+  height: 96px;
+  padding: 0;
+  background: var(--coral);
+  color: var(--plum);
+  border: var(--line);
+  border-radius: 48px;
+  box-shadow: 0 6px 0 var(--plum);
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.1s, translate 0.1s;
+}
+
+.btn:active {
+  translate: 0 4px;
+  box-shadow: 0 2px 0 var(--plum);
+}
+
+.btn:focus-visible,
+.reset:focus-visible {
+  outline: 4px solid var(--plum);
+  outline-offset: 4px;
+}
+
+/* ---------- Face ---------- */
+.face {
+  position: relative;
+  display: flex;
+  gap: 18px;
+  height: 26px;
+}
+
+.eye {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  background: var(--white);
+  border: 2px solid var(--plum);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+/* --lx / --ly are set from JS so the pupils follow the cursor */
+.pupil {
+  width: 10px;
+  height: 10px;
+  background: var(--plum);
+  border-radius: 50%;
+  transform: translate(var(--lx, 0px), var(--ly, 0px));
+  transition: transform 0.15s;
+}
+
+/* --blush (0 to 1) grows with every escape */
+.cheek {
+  position: absolute;
+  top: 16px;
+  width: 14px;
+  height: 8px;
+  background: var(--cheek);
+  border-radius: 50%;
+  opacity: calc(0.15 + var(--blush, 0) * 0.85);
+  transition: opacity 0.3s;
+}
+
+.cheek--left {
+  left: -14px;
+}
+
+.cheek--right {
+  right: -14px;
+}
+
+/* ---------- Sweat drop (tired state only) ---------- */
+.sweat {
+  display: none;
+  position: absolute;
+  top: -8px;
+  right: 22px;
+  width: 12px;
+  height: 16px;
+  background: var(--sweat);
+  border: 2px solid var(--plum);
+  border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+}
+
+/* ---------- States ---------- */
+.shy[data-state="tired"] .btn {
+  animation: pant 0.9s ease-in-out infinite;
+}
+
+.shy[data-state="tired"] .sweat {
+  display: block;
+  animation: drip 1.4s ease-in infinite;
+}
+
+.shy[data-state="caught"] .btn {
+  background: var(--butter);
+  animation: pop 0.35s ease-out;
+}
+
+/* Closed, happy eyes */
+.shy[data-state="caught"] .eye {
+  transform: scaleY(0.2);
+}
+
+.shy[data-state="caught"] .cheek {
+  opacity: 1;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  padding: 16px var(--gutter) 20px;
+}
+
+.stat {
+  margin: 0;
+}
+
+.stat strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.reset {
+  margin-left: auto;
+  padding: 10px 20px;
+  background: var(--white);
+  color: var(--plum);
+  border: var(--line);
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.reset:hover {
+  background: var(--butter);
+}
+
+/* ---------- Animations ---------- */
+@keyframes pop {
+  0%   { transform: scale(0.85); }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* Applied to .btn, so it must not clash with the .bubble transform above */
+@keyframes pant {
+  50% { transform: scale(1.05, 0.95); }
+}
+
+@keyframes drip {
+  0%   { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(14px); opacity: 0; }
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 480px) {
+  body {
+    font-size: 1rem;
+  }
+
+  .stage {
+    min-height: 380px;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .shy,
+  .pupil,
+  .eye,
+  .cheek {
+    transition: none;
+  }
+
+  .bubble.pop,
+  .shy[data-state] .btn,
+  .shy[data-state] .sweat {
+    animation: none;
+  }
+}
